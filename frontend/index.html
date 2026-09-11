@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIRI — Predictive Infrastructure Risk Intelligence</title>
+<style>
+:root{
+  --navy:#081b33;--navy2:#102b4b;--blue:#1976c8;--blue2:#0e5da5;
+  --bg:#f4f7fb;--card:#fff;--line:#e5ebf2;--text:#152438;--muted:#66758a;
+  --red:#d64545;--redbg:#fff3f3;--amber:#c98200;--amberbg:#fff8e8;
+  --green:#16865a;--greenbg:#edf9f3;--shadow:0 10px 28px rgba(8,27,51,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:18px 28px;position:sticky;top:0;z-index:20;box-shadow:0 5px 20px rgba(0,0,0,.15)}
+.header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#2a9df4,#1265ad);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 7px 18px rgba(0,0,0,.2)}
+h1{font-size:21px;margin:0 0 3px;font-weight:800}
+.subtitle{font-size:12px;color:#c9d9eb}
+.header-actions{display:flex;gap:8px;align-items:center}
+.btn{border:1px solid transparent;border-radius:9px;padding:9px 13px;font-weight:700}
+.btn-primary{background:#1d80d0;color:white}.btn-primary:hover{background:#176caf}
+.btn-light{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
+.wrap{max-width:1500px;margin:auto;padding:20px}
+.demo-strip{display:flex;justify-content:space-between;align-items:center;background:#eaf4ff;border:1px solid #cfe5fb;color:#174a78;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12px}
+.demo-strip b{font-weight:800}.muted{color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}
+.kpi{padding:15px 17px;position:relative;overflow:hidden}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:700}
+.kpi .value{font-size:25px;font-weight:900;margin-top:5px}
+.kpi .sub{font-size:11px;color:var(--muted);margin-top:4px}
+.kpi .accent{position:absolute;right:-18px;top:-22px;width:70px;height:70px;border-radius:50%;background:#eaf4ff}
+.section{padding:16px}
+.grid-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:14px;margin-top:14px}
+.grid-bottom{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr);gap:14px;margin-top:14px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}
+.card-head h2,.card-head h3{margin:0;font-size:16px}
+.card-head .meta{font-size:11px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.input,.select{border:1px solid #d8e1eb;background:#fff;border-radius:9px;padding:9px 11px;outline:none}
+.input{min-width:230px;flex:1}.select{min-width:145px}
+.input:focus,.select:focus{border-color:#76b4e8;box-shadow:0 0 0 3px #dceeff}
+.table-wrap{overflow:auto;max-height:430px;border:1px solid var(--line);border-radius:11px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:780px}
+th{position:sticky;top:0;background:#f7f9fc;color:#647286;font-size:11px;text-transform:uppercase;letter-spacing:.04em;z-index:2}
+th,td{text-align:left;padding:10px 11px;border-bottom:1px solid #edf1f5}
+tr.project-row{transition:.15s;background:#fff}
+tr.project-row:hover{background:#f5faff}
+.project-code{font-weight:850;color:#0d5f9f}
+.progress-wrap{display:flex;align-items:center;gap:7px;min-width:100px}
+.progress{height:6px;width:58px;background:#e9eef4;border-radius:99px;overflow:hidden}
+.progress>span{display:block;height:100%;background:#3d91d2;border-radius:99px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:4px 8px;font-size:10px;font-weight:800}
+.pill-high{background:var(--redbg);color:var(--red)}.pill-medium{background:var(--amberbg);color:var(--amber)}.pill-low{background:var(--greenbg);color:var(--green)}
+.risk-number{font-weight:850}
+.eval{border:0;background:#176fba;color:#fff;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:800}
+.side-stack{display:grid;gap:14px}
+.sector-list{display:grid;gap:10px}
+.sector-row{padding:9px 0;border-bottom:1px solid #edf1f5}
+.sector-top{display:flex;justify-content:space-between;font-size:12px;font-weight:750}
+.bar{height:7px;background:#edf1f5;border-radius:99px;overflow:hidden;margin:6px 0}
+.bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#43a3e4,#176fba)}
+.sector-foot{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.alerts{max-height:360px;overflow:auto}
+.alert{padding:10px 11px;margin:8px 0;border:1px solid #f2dddd;border-left:4px solid var(--red);background:#fff8f8;border-radius:9px}
+.alert.critical{border-left-color:#b92727}.alert.high{border-left-color:#e08b17;background:#fffaf1;border-color:#f4e4c8}
+.alert-title{font-size:12px;font-weight:850}.alert-signal{font-size:11px;margin-top:3px}.alert-action{font-size:10px;color:var(--muted);margin-top:5px}
+.detail{min-height:430px}
+.detail-empty{display:grid;place-items:center;min-height:400px;text-align:center;color:var(--muted)}
+.detail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.detail-name{font-size:18px;font-weight:850;margin:0}.detail-code{font-size:11px;color:var(--muted)}
+.score-box{min-width:110px;text-align:center;border-radius:13px;padding:11px;background:#fff3f3;border:1px solid #f1d5d5}
+.score-box .score{font-size:26px;font-weight:900;color:var(--red)}.score-box small{font-weight:800;color:var(--red)}
+.risk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}
+.metric{background:#f7f9fc;border:1px solid #e8edf3;border-radius:10px;padding:10px}
+.metric .label{font-size:10px;color:var(--muted)}.metric .value{font-size:16px;font-weight:850;margin-top:4px}
+.driver-list{margin-top:10px}.driver{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf1f5;font-size:11px}
+.driver b{font-variant-numeric:tabular-nums}.driver .feature{font-weight:650}
+.driver .model{color:var(--muted);font-size:10px}
+.assistant{display:flex;flex-direction:column;height:430px}
+.chat{flex:1;overflow:auto;padding:2px}
+.msg{max-width:88%;padding:9px 11px;border-radius:11px;margin:7px 0;font-size:12px;line-height:1.45}
+.msg.bot{background:#eef4f9}.msg.user{background:#e7f1ff;margin-left:auto}
+.msg small{color:var(--muted)}
+.chatbox{display:flex;gap:7px;margin-top:10px}.chatbox input{flex:1}
+.loading{color:var(--muted);padding:16px;text-align:center}
+.error{padding:12px;border-radius:9px;background:#fff3f3;color:#b92727;font-size:12px}
+.footer-note{font-size:10px;color:var(--muted);margin-top:12px;display:flex;justify-content:space-between;gap:10px}
+.refreshing{opacity:.65;pointer-events:none}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.grid-main,.grid-bottom{grid-template-columns:1fr}}
+@media(max-width:700px){.wrap{padding:12px}.kpis{grid-template-columns:repeat(2,1fr)}.header-inner{align-items:flex-start}.subtitle{max-width:500px}.risk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.kpis{grid-template-columns:1fr}.header-actions .btn-light{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">PI</div>
+      <div>
+        <h1>PIRI — Predictive Infrastructure Risk Intelligence</h1>
+        <div class="subtitle">AI-powered infrastructure monitoring • prediction • explainability • early warning</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="modelBadge" class="btn btn-light">Model —</span>
+      <button class="btn btn-primary" onclick="refreshDashboard()">↻ Refresh</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="demo-strip">
+    <div><b>DEMO MODE</b> · Current prototype uses synthetic project records. Production integration is designed for authorized PAIMANA/OCMS data.</div>
+    <div id="lastUpdated">Waiting for data…</div>
+  </div>
+
+  <section class="kpis" id="kpis">
+    <div class="card kpi"><div class="label">Portfolio</div><div class="value">—</div><div class="sub">Loading</div></div>
+    <div class="card kpi"><div class="label">Original Cost</div><div class="value">—</div></div>
+    <div class="card kpi"><div class="label">Revised Cost</div><div class="value">—</div></div>
+    <div class="card kpi"><div class="label">High Risk</div><div class="value">—</div></div>
+    <div class="card kpi"><div class="label">Expenditure</div><div class="value">—</div></div>
+  </section>
+
+  <section class="grid-main">
+    <div class="card section">
+      <div class="card-head">
+        <h2>Project Portfolio</h2>
+        <div class="meta" id="portfolioMeta">Loading AI-scored portfolio…</div>
+      </div>
+      <div class="toolbar">
+        <input class="input" id="q" placeholder="Search project, code or ministry…" oninput="renderProjects()">
+        <select class="select" id="sector" onchange="renderProjects()"><option value="">All sectors</option></select>
+        <select class="select" id="risk" onchange="renderProjects()"><option value="">All risk levels</option><option>High</option><option>Medium</option><option>Low</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Project</th><th>Sector</th><th>Progress</th><th>PIRI</th><th>Cost Risk</th><th>Delay Risk</th><th>Action</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="7" class="loading">Loading portfolio…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="footer-note"><span>Click Evaluate to open project-level explainable AI.</span><span id="portfolioCount"></span></div>
+    </div>
+
+    <div class="side-stack">
+      <div class="card section">
+        <div class="card-head"><h2>Sector Risk</h2><div class="meta">Average PIRI</div></div>
+        <div id="sectors" class="sector-list"><div class="loading">Calculating sector risk…</div></div>
+      </div>
+      <div class="card section">
+        <div class="card-head"><h2>Live Early Warnings</h2><div class="meta" id="alertCount">—</div></div>
+        <div id="alerts" class="alerts"><div class="loading">Loading early warnings…</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-bottom">
+    <div class="card section detail" id="detail">
+      <div class="detail-empty">
+        <div>
+          <div style="font-size:34px;margin-bottom:8px">◈</div>
+          <h2 style="margin:0 0 7px">Explainable AI Project View</h2>
+          <div>Select <b>Evaluate</b> on any project to see PIRI, cost risk, delay risk and SHAP drivers.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section assistant">
+      <div class="card-head">
+        <h2>Project Intelligence Assistant</h2>
+        <div class="meta" id="assistantProject">No project selected</div>
+      </div>
+      <div class="chat" id="chatlog">
+        <div class="msg bot">Select a project, then ask: <b>“Why is this project high risk?”</b></div>
+      </div>
+      <div class="chatbox">
+        <input class="input" id="chat" placeholder="Ask a grounded project question…" onkeydown="if(event.key==='Enter')ask()">
+        <button class="btn btn-primary" onclick="ask()">Ask</button>
+      </div>
+      <div class="footer-note"><span>Prototype assistant is grounded in project/model outputs.</span></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API = location.origin;
+let dashboard = null;
+let selected = null;
+
+async function j(url, options){
+  const r = await fetch(API + url, options);
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const pct = x => `${Math.round(Number(x || 0) * 100)}%`;
+const money = x => `₹${Number(x || 0).toLocaleString("en-IN",{maximumFractionDigits:0})} Cr`;
+const levelClass = l => String(l || "").toLowerCase();
+const scoreClass = s => s >= 70 ? "pill-high" : s >= 45 ? "pill-medium" : "pill-low";
+
+async function refreshDashboard(){
+  document.body.classList.add("refreshing");
+  try{
+    const d = await j("/api/dashboard");
+    dashboard = d;
+    document.getElementById("modelBadge").textContent = `Model ${d.model_version || "—"}`;
+    document.getElementById("lastUpdated").textContent = `Updated ${new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`;
+    renderKpis(d.summary);
+    populateSectors(d.sectors);
+    renderAlerts(d.alerts);
+    renderProjects();
+    document.getElementById("portfolioMeta").textContent = `${d.projects.length} ongoing projects · AI scored`;
+    if(!selected){
+      const first = [...d.projects].sort((a,b)=>b.risk_score-a.risk_score)[0];
+      if(first) selectProject(first.project_code, false);
+    }
+  }catch(e){
+    console.error(e);
+    document.getElementById("rows").innerHTML = `<tr><td colspan="7"><div class="error">Dashboard data could not be loaded: ${esc(e.message)}</div></td></tr>`;
+    document.getElementById("sectors").innerHTML = `<div class="error">Sector analytics unavailable.</div>`;
+    document.getElementById("alerts").innerHTML = `<div class="error">Early-warning engine unavailable.</div>`;
+  }finally{
+    document.body.classList.remove("refreshing");
+  }
+}
+
+function renderKpis(s){
+  const revisedDelta = Number(s.revised_cost_cr||0) - Number(s.original_cost_cr||0);
+  document.getElementById("kpis").innerHTML = `
+    <div class="card kpi"><div class="accent"></div><div class="label">ONGOING PROJECTS</div><div class="value">${s.projects}</div><div class="sub">${s.high_risk} high · ${s.medium_risk} medium · ${s.low_risk} low</div></div>
+    <div class="card kpi"><div class="accent"></div><div class="label">ORIGINAL COST</div><div class="value">${money(s.original_cost_cr)}</div><div class="sub">Portfolio baseline</div></div>
+    <div class="card kpi"><div class="accent"></div><div class="label">REVISED COST</div><div class="value">${money(s.revised_cost_cr)}</div><div class="sub">Δ ${money(revisedDelta)} vs original</div></div>
+    <div class="card kpi"><div class="accent"></div><div class="label">HIGH-RISK PROJECTS</div><div class="value" style="color:#d64545">${s.high_risk}</div><div class="sub">PIRI ≥ 70</div></div>
+    <div class="card kpi"><div class="accent"></div><div class="label">EXPENDITURE</div><div class="value">${money(s.expenditure_cr)}</div><div class="sub">Reported portfolio expenditure</div></div>
+  `;
+}
+
+function populateSectors(sectors){
+  const select = document.getElementById("sector");
+  select.innerHTML = `<option value="">All sectors</option>` + sectors.map(x=>`<option value="${esc(x.sector)}">${esc(x.sector)}</option>`).join("");
+  document.getElementById("sectors").innerHTML = sectors.length ? sectors.map(x=>{
+    const risk = Number(x.avg_risk||0);
+    return `<div class="sector-row">
+      <div class="sector-top"><span>${esc(x.sector)}</span><span>${risk.toFixed(1)}</span></div>
+      <div class="bar"><span style="width:${Math.min(100,risk)}%"></span></div>
+      <div class="sector-foot"><span>${x.projects} projects</span><span>${x.high_risk} high risk</span></div>
+    </div>`;
+  }).join("") : `<div class="loading">No sector data.</div>`;
+}
+
+function renderAlerts(alerts){
+  document.getElementById("alertCount").textContent = `${alerts.length} active`;
+  document.getElementById("alerts").innerHTML = alerts.length ? alerts.slice(0,8).map(x=>`
+    <div class="alert ${x.severity==="CRITICAL"?"critical":"high"}">
+      <div class="alert-title">${esc(x.severity)} · ${esc(x.project_name)} <span class="muted">(${esc(x.project_code)})</span></div>
+      <div class="alert-signal">${esc(x.signal)} · <b>${pct(x.probability)}</b></div>
+      <div class="alert-action"><b>Recommended:</b> ${esc(x.recommended_action)}</div>
+    </div>
+  `).join("") : `<div class="loading">No active high-risk warnings.</div>`;
+}
+
+function renderProjects(){
+  if(!dashboard) return;
+  const q = document.getElementById("q").value.toLowerCase().trim();
+  const sector = document.getElementById("sector").value;
+  const risk = document.getElementById("risk").value;
+  const list = dashboard.projects.filter(p=>{
+    const hay = `${p.project_code} ${p.name} ${p.ministry}`.toLowerCase();
+    return (!q || hay.includes(q)) && (!sector || p.sector===sector) && (!risk || p.risk_level===risk);
+  }).slice(0,50);
+
+  document.getElementById("portfolioCount").textContent = `${list.length} shown`;
+  document.getElementById("rows").innerHTML = list.length ? list.map(p=>`
+    <tr class="project-row">
+      <td><div class="project-code">${esc(p.project_code)}</div><div class="muted" style="font-size:10px">${esc(p.name)}</div></td>
+      <td>${esc(p.sector)}</td>
+      <td><div class="progress-wrap"><div class="progress"><span style="width:${Math.min(100,Math.max(0,p.physical_progress_pct||0))}%"></span></div>${Number(p.physical_progress_pct||0).toFixed(1)}%</div></td>
+      <td><span class="pill ${scoreClass(p.risk_score)}">${Number(p.risk_score).toFixed(1)} ${esc(p.risk_level)}</span></td>
+      <td class="risk-number">${pct(p.cost_overrun_probability)}</td>
+      <td class="risk-number">${pct(p.delay_probability)}</td>
+      <td><button class="eval" onclick="selectProject('${esc(p.project_code)}',true)">Evaluate</button></td>
+    </tr>
+  `).join("") : `<tr><td colspan="7" class="loading">No matching projects.</td></tr>`;
+}
+
+async function selectProject(code, scroll=true){
+  selected = code;
+  const p = dashboard.projects.find(x=>x.project_code===code);
+  if(!p) return;
+  const detail = document.getElementById("detail");
+  document.getElementById("assistantProject").textContent = code;
+  detail.innerHTML = `<div class="loading">Loading explainability for ${esc(code)}…</div>`;
+  if(scroll) detail.scrollIntoView({behavior:"smooth",block:"center"});
+  try{
+    const x = await j(`/api/projects/${encodeURIComponent(code)}/prediction`);
+    detail.innerHTML = `
+      <div class="detail-top">
+        <div><div class="detail-name">${esc(p.name)}</div><div class="detail-code">${esc(p.project_code)} · ${esc(p.sector)} · ${esc(p.ministry)}</div></div>
+        <div class="score-box"><div class="score">${Number(x.risk_score).toFixed(1)}</div><small>${esc(x.risk_level.toUpperCase())} RISK</small></div>
+      </div>
+      <div class="risk-grid">
+        <div class="metric"><div class="label">COST-OVERRUN RISK</div><div class="value">${pct(x.cost_overrun_probability)}</div></div>
+        <div class="metric"><div class="label">SCHEDULE-DELAY RISK</div><div class="value">${pct(x.delay_probability)}</div></div>
+        <div class="metric"><div class="label">PHYSICAL PROGRESS</div><div class="value">${Number(p.physical_progress_pct).toFixed(1)}%</div></div>
+        <div class="metric"><div class="label">SCHEDULE PROGRESS</div><div class="value">${Number(p.schedule_progress_pct).toFixed(1)}%</div></div>
+      </div>
+      <div class="card-head"><h3>Why is this project risky?</h3><div class="meta">SHAP model contribution</div></div>
+      <div class="driver-list">${(x.top_drivers||[]).map(d=>`
+        <div class="driver"><span><div class="model">${esc(d.model)}</div><div class="feature">${esc(d.feature)}</div></span><b>${Number(d.impact).toFixed(4)}</b></div>
+      `).join("")}</div>
+      <div class="footer-note"><span>Model ${esc(x.model_version)}</span><span>SHAP explains model contribution; it does not establish causality.</span></div>
+    `;
+    document.getElementById("chatlog").innerHTML = `<div class="msg bot">Selected <b>${esc(code)}</b>. Ask why it is risky, what its main drivers are, or what the model predicts.</div>`;
+  }catch(e){
+    detail.innerHTML = `<div class="error">Prediction error for ${esc(code)}: ${esc(e.message)}</div>`;
+  }
+}
+
+async function ask(){
+  const input = document.getElementById("chat");
+  const text = input.value.trim();
+  if(!text) return;
+  const log = document.getElementById("chatlog");
+  log.innerHTML += `<div class="msg user">${esc(text)}</div>`;
+  input.value="";
+  try{
+    const r = await j("/api/assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,project_code:selected})});
+    log.innerHTML += `<div class="msg bot">${esc(r.answer)}<br><small>${(r.evidence||[]).map(esc).join(" • ")}</small></div>`;
+  }catch(e){
+    log.innerHTML += `<div class="msg bot">Assistant error: ${esc(e.message)}</div>`;
+  }
+  log.scrollTop=log.scrollHeight;
+}
+
+refreshDashboard();
+</script>
+</body>
+</html>
