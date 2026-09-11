@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIRI — Predictive Infrastructure Risk Intelligence</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#162033}
+header{background:linear-gradient(135deg,#071a36,#123a68);color:#fff;padding:22px 28px;position:sticky;top:0;z-index:5;box-shadow:0 5px 22px #06172a30}
+.brand{display:flex;align-items:center;gap:14px}.logo{width:46px;height:46px;border-radius:13px;background:#fff;color:#123a68;display:grid;place-items:center;font-weight:900;font-size:20px}
+h1{font-size:23px;margin:0}.sub{opacity:.78;font-size:12px;margin-top:3px}
+.wrap{max-width:1500px;margin:auto;padding:22px}.banner{background:#fff8df;border:1px solid #f0d67b;border-radius:12px;padding:11px 15px;font-size:13px;margin-bottom:18px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}input,select,button{border:1px solid #d8e0eb;border-radius:9px;padding:10px 12px;background:#fff;font:inherit}button{cursor:pointer;background:#123a68;color:#fff;border-color:#123a68;font-weight:700}button.secondary{background:#fff;color:#123a68}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.card{background:#fff;border:1px solid #e1e7ef;border-radius:15px;padding:17px;box-shadow:0 3px 12px #12233a0a}.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#718096}.value{font-size:27px;font-weight:800;margin-top:5px}.muted{color:#6b778a;font-size:12px}
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}.section-title{font-size:17px;font-weight:800;margin-bottom:13px}.panel{background:#fff;border:1px solid #e1e7ef;border-radius:15px;padding:17px;box-shadow:0 3px 12px #12233a0a}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf0f5;white-space:nowrap}th{font-size:10px;text-transform:uppercase;color:#758197;letter-spacing:.06em}tr:hover{background:#f7faff}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800}.high{background:#ffe7e7;color:#a32626}.medium{background:#fff1d5;color:#8a5a00}.low{background:#e5f7ed;color:#167347}
+.barrow{margin:12px 0}.barhead{display:flex;justify-content:space-between;font-size:12px;font-weight:700}.bar{height:8px;background:#edf1f6;border-radius:10px;overflow:hidden;margin-top:6px}.fill{height:100%;background:#2e6da4;border-radius:10px}
+.alert{border-left:4px solid #d03a3a;background:#fff6f6;border-radius:9px;padding:11px;margin:9px 0}.alert.highalert{border-left-color:#e69b2c;background:#fffaf1}.alert strong{font-size:12px}.alert small{display:block;color:#6b7280;margin-top:3px;line-height:1.4}
+.eval{margin-top:16px}.riskbig{display:flex;align-items:center;gap:18px}.score{font-size:46px;font-weight:900;color:#123a68}.riskmeta{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:14px 0}.mini{background:#f6f8fb;border-radius:10px;padding:11px}.mini b{display:block;font-size:19px}.drivers{display:grid;gap:7px}.driver{display:flex;justify-content:space-between;padding:9px 10px;background:#f7f9fc;border-radius:8px;font-size:12px}
+.chat{display:flex;gap:8px}.chat input{flex:1}.answer{background:#f5f8fc;border-radius:10px;padding:11px;margin-top:10px;font-size:13px;line-height:1.5}
+.loading{color:#7a8596;padding:20px;text-align:center}.tablewrap{overflow:auto;max-height:620px}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}}@media(max-width:650px){.kpis{grid-template-columns:repeat(2,1fr)}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding:0"><div class="brand"><div class="logo">PI</div><div><h1>PIRI — Predictive Infrastructure Risk Intelligence</h1><div class="sub">AI-powered project monitoring & early warning system • SIH 2026 PS 103</div></div></div></div></header>
+<main class="wrap">
+<div class="banner">⚠️ <b>Prototype / Demo Mode:</b> current records are synthetic demonstration data. Production deployment is designed for authorized PAIMANA/OCMS integration.</div>
+<div class="toolbar"><input id="search" placeholder="Search project, code or ministry…" oninput="renderTable()"><select id="sector" onchange="renderTable()"><option value="">All sectors</option></select><select id="risk" onchange="renderTable()"><option value="">All risk levels</option><option>High</option><option>Medium</option><option>Low</option></select><button onclick="loadDashboard()">↻ Refresh</button><span id="updated" class="muted" style="padding:10px"></span></div>
+<section class="kpis" id="kpis"></section>
+<div class="grid2">
+<section class="panel"><div class="section-title">Portfolio Risk by Sector</div><div id="sectors"><div class="loading">Loading sector intelligence…</div></div></section>
+<section class="panel"><div class="section-title">Live Early Warnings</div><div id="alerts"><div class="loading">Loading early warnings…</div></div></section>
+</div>
+<section class="panel" style="margin-top:16px"><div class="section-title">Project Portfolio</div><div class="tablewrap"><table><thead><tr><th>Project</th><th>Sector</th><th>Physical</th><th>Schedule</th><th>PIRI</th><th>Cost Risk</th><th>Delay Risk</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="8" class="loading">Loading portfolio…</td></tr></tbody></table></div></section>
+<section class="grid2 eval">
+<section class="panel"><div class="section-title">Explainable AI — Selected Project</div><div id="evaluation"><div class="loading">Select “Evaluate” to inspect project risk.</div></div></section>
+<section class="panel"><div class="section-title">Project Intelligence Assistant</div><div class="muted">Grounded prototype assistant for the selected project.</div><div class="chat" style="margin-top:12px"><input id="chatmsg" placeholder="Ask: why is this risky?"><button onclick="ask()">Ask</button></div><div id="answer"></div></section>
+</section>
+</main>
+<script>
+let DATA={projects:[],sectors:[],alerts:[],summary:{}},selected=null;
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const pct=x=>`${Math.round(Number(x||0)*100)}%`;
+const money=x=>`₹${(Number(x||0)/100).toLocaleString('en-IN',{maximumFractionDigits:0})} cr`;
+function badge(level){return `<span class="badge ${String(level).toLowerCase()}">${esc(level)}</span>`}
+function loadDashboard(){
+ document.getElementById('rows').innerHTML='<tr><td colspan="8" class="loading">Loading PIRI portfolio intelligence…</td></tr>';
+ fetch('/api/dashboard').then(r=>{if(!r.ok)throw Error('Dashboard API failed');return r.json()}).then(d=>{DATA=d;renderAll();document.getElementById('updated').textContent='Updated '+new Date(d.generated_at).toLocaleTimeString(); if(DATA.projects.length){const top=[...DATA.projects].sort((a,b)=>b.risk_score-a.risk_score)[0]; selectProject(top.project_code)}}).catch(e=>{document.getElementById('rows').innerHTML='<tr><td colspan="8" class="loading">Dashboard failed to load. Check Render logs.</td></tr>';console.error(e)});
+}
+function renderAll(){
+ const s=DATA.summary||{};
+ document.getElementById('kpis').innerHTML=[
+ ['Ongoing Projects',s.ongoing_projects||0,'Portfolio monitored'],
+ ['Original Cost',money(s.original_cost_cr),'Aggregate'],
+ ['Revised Cost',money(s.revised_cost_cr),'Aggregate'],
+ ['High-Risk Projects',s.high_risk||0,'Needs attention'],
+ ['Expenditure',money(s.expenditure_cr),'Aggregate']
+ ].map(x=>`<div class="card"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="muted">${x[2]}</div></div>`).join('');
+ const sel=document.getElementById('sector'); const old=sel.value; sel.innerHTML='<option value="">All sectors</option>'+DATA.sectors.map(x=>`<option>${esc(x.sector)}</option>`).join('');sel.value=old;
+ document.getElementById('sectors').innerHTML=DATA.sectors.map(x=>`<div class="barrow"><div class="barhead"><span>${esc(x.sector)}</span><span>${x.avg_risk} PIRI • ${x.high_risk} high</span></div><div class="bar"><div class="fill" style="width:${Math.min(100,x.avg_risk)}%"></div></div><div class="muted">${x.projects} projects • avg cost risk ${pct(x.cost_risk)} • avg delay risk ${pct(x.delay_risk)}</div></div>`).join('');
+ document.getElementById('alerts').innerHTML=DATA.alerts.length?DATA.alerts.map(a=>`<div class="alert ${a.severity==='HIGH'?'highalert':''}"><strong>${esc(a.severity)} · ${esc(a.project_name)}</strong><small>${esc(a.signal)} · ${pct(a.probability)}</small><small>→ ${esc(a.recommended_action)}</small></div>`).join(''):'<div class="loading">No high-priority warnings.</div>';
+ renderTable();
+}
+function renderTable(){
+ const q=document.getElementById('search').value.toLowerCase(), sec=document.getElementById('sector').value, risk=document.getElementById('risk').value;
+ const ps=DATA.projects.filter(p=>(!q||(p.name+' '+p.project_code+' '+p.ministry).toLowerCase().includes(q))&&(!sec||p.sector===sec)&&(!risk||p.risk_level===risk));
+ document.getElementById('rows').innerHTML=ps.slice(0,80).map(p=>`<tr><td><b>${esc(p.project_code)}</b><br><span class="muted">${esc(p.name)}</span></td><td>${esc(p.sector)}</td><td>${p.physical_progress_pct.toFixed(1)}%</td><td>${p.schedule_progress_pct.toFixed(1)}%</td><td>${badge(p.risk_level)} <b>${p.risk_score}</b></td><td>${pct(p.cost_overrun_probability)}</td><td>${pct(p.delay_probability)}</td><td><button onclick="selectProject('${esc(p.project_code)}')">Evaluate</button></td></tr>`).join('')||'<tr><td colspan="8" class="loading">No projects match the filters.</td></tr>';
+}
+function selectProject(code){
+ selected=DATA.projects.find(p=>p.project_code===code); if(!selected)return;
+ document.getElementById('evaluation').innerHTML='<div class="loading">Running explainable project evaluation…</div>';
+ document.getElementById('answer').innerHTML='';
+ fetch('/api/projects/'+encodeURIComponent(code)+'/prediction').then(r=>r.json()).then(d=>{
+  document.getElementById('evaluation').innerHTML=`<div class="riskbig"><div class="score">${d.risk_score}</div><div>${badge(d.risk_level)}<div class="muted" style="margin-top:6px">${esc(d.project_code)} • ${esc(selected.name)}</div></div></div>
+  <div class="riskmeta"><div class="mini"><span class="muted">Cost-overrun risk</span><b>${pct(d.cost_overrun_probability)}</b></div><div class="mini"><span class="muted">Schedule-delay risk</span><b>${pct(d.delay_probability)}</b></div><div class="mini"><span class="muted">Predicted cost growth</span><b>${d.cost_overrun_pct}%</b></div><div class="mini"><span class="muted">Predicted delay</span><b>${d.predicted_delay_months} mo</b></div></div>
+  <div class="muted" style="margin-bottom:8px">Top SHAP drivers • model ${esc(d.model_version)}</div><div class="drivers">${d.top_drivers.length?d.top_drivers.map(x=>`<div class="driver"><span>${esc(x.model)} · <b>${esc(x.feature)}</b></span><span>${x.impact>0?'+':''}${x.impact}</span></div>`).join(''):'<div class="muted">Explanation unavailable for this record.</div>'}</div>`;
+  document.getElementById('evaluation').scrollIntoView({behavior:'smooth',block:'start'});
+ }).catch(()=>document.getElementById('evaluation').innerHTML='<div class="loading">Evaluation unavailable.</div>');
+}
+function ask(){
+ if(!selected){document.getElementById('answer').innerHTML='<div class="answer">Evaluate a project first.</div>';return}
+ const msg=document.getElementById('chatmsg').value.trim(); if(!msg)return;
+ document.getElementById('answer').innerHTML='<div class="answer">Thinking…</div>';
+ fetch('/api/assistant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,project_code:selected.project_code})}).then(r=>r.json()).then(d=>document.getElementById('answer').innerHTML=`<div class="answer">${esc(d.answer)}</div>`);
+}
+document.getElementById('chatmsg').addEventListener('keydown',e=>{if(e.key==='Enter')ask()});
+loadDashboard();
+</script>
+</body></html>

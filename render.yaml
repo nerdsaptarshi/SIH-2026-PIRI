@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: piri-ai-monitoring
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/seed_and_train.py && uvicorn backend.main:app --host 0.0.0.0 --port $PORT --proxy-headers
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: piri-db
+          property: connectionString
+
+databases:
+  - name: piri-db
+    plan: free

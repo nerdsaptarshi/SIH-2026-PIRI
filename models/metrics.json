@@ -1,0 +1,10 @@
+{
+  "cost_auc": 0.9495798319327732,
+  "cost_accuracy": 0.75,
+  "delay_auc": 1.0,
+  "delay_accuracy": 0.9583333333333334,
+  "cost_mae_pct": 2.5415388888888906,
+  "cost_rmse_pct": 3.033851519368425,
+  "delay_mae_months": 1.7536013888888895,
+  "delay_rmse_months": 2.2752083971807653
+}
